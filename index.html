@@ -1,0 +1,52 @@
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <script>
+        function sendMessage() {
+            let token = document.getElementById("token").value
+            let channel = document.getElementById("channel").value
+            let message = document.getElementById("message").value
+
+            let url = "http://192.168.1.101:3333/sms"
+
+            $.ajax(url, { type: "POST", data: {
+                header: {
+                    CLIENT_TOKEN: token
+                },
+                body: {
+                    CHANNEL_ID: channel,
+                    MESSAGE: message
+                }		
+            }, success: onSuccess });
+
+            async function onSuccess(obj) {
+                console.log(obj.response)
+            }
+        }
+    </script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-md bg-dark navbar-dark fixed-top">
+        <!--Brand Labelling-->
+        <a class="navbar-brand" href="https://jimerased.com">JimErased.com</a>
+    </nav>
+    <div class="container">
+        <div class="col-xl-5 col-lg-6 col-md-8 col-sm-10 mx-auto form p-4" style="background-color: rgb(52, 58, 64);border-radius: 10px;margin-top: 4rem;color: #fff;">
+            <h1 class="display-4 py-2 text-truncate text-center">Discord Bot Message Poster</h1>
+            <div id="inputform" class="form-group">
+                <form method="post">
+                    <p><label for="token">Client Token: </label>
+                    <input type="text" name="token" id="token" class="form-control" required maxlength="59" minlength="59" value="OTExMzIyMjEzMDQ5ODUxOTA0.YZfs8w.ntKZ3n_bDOoSg2a4LVzmlwrKNvE">
+
+                    <p><label for="channel">Channel: </label>
+                    <input type="text" name="channel" id="channel" class="form-control" required maxlength="18" minlength="18" value="934762461926678570">
+
+                    <p><label for="message">Message: </label>
+                    <input type="text" name="message" id="message" class="form-control">
+
+                    <input type="button" name="submit" id="submit" value="Submit" class="btn btn-primary" onClick="sendMessage()"></p>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>

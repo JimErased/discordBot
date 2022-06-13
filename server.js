@@ -4,7 +4,7 @@ const { Users } = require('/var/www/jimerased.com/html/node/discordBot/dbObjects
 
 
 const hostname = '192.168.1.101';
-const port = 3000;
+const port = 3030;
 
 var highScore = getHighScores();
 
