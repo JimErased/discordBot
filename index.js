@@ -17,8 +17,14 @@ const app = express()
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
+app.use(function(req, res, next) {
+	res.header("Access-Control-Allow-Origin", "jimerased.com"); // update to match the domain you will make the request from
+	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+	next();
+});
+
 // Route that receives a POST request to /sms
-app.post('/sms', function (req, res) {
+app.post('/sms', function (req, res, next) {
   const body = req.body
   res.set('Content-Type', 'application/json')
   res.send(`You sent: ${body} to Express`)
