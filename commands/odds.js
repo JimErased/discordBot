@@ -7,6 +7,8 @@ client.once('ready', async () => {
 	console.log(`Odds logged in as ${client.user.tag}!`);
 });
 
+let sleep = async (ms) => await new Promise(r => setTimeout(r,ms));
+
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('odds')
@@ -34,7 +36,7 @@ module.exports = {
 		player2.user = interaction.options.getUser('target')
 		player2.username = player2.user.username
 		player2.int = null
-		player2.id = interaction.user.id
+		player2.id = user2.id
 
 		const limit = interaction.options.getInteger('int');
 		const reason = interaction.options.getString('reason');
@@ -52,27 +54,55 @@ module.exports = {
 
 		// Filter needs to check that the user is part of the 2 at odds, and their odds value is null
 		const filter = interaction => { 
-			console.log(player1.int)
-			if ((interaction.author.userid == player1.userid) && player1.int == null || (interaction.author.userid == player2.id) && player2.int == null) {
-				if (interaction.author.userid == player1.userid) {
-					console.log(player1.int)
-					player1.int = interaction.content
-				} else {
-					player2.int = interaction.content
+			console.log(`Limit: ${limit}`)
+			if (((interaction.author.id == player1.id) && player1.int == null) || ((interaction.author.id == player2.id) && player2.int == null)) {
+				console.log(interaction.content)
+				if (interaction.author.id == player1.id && !isNaN(interaction.content)) {
+					if((interaction.content > limit || interaction.content < 1)) {
+						interaction.delete(interaction.id)
+						interaction.channel.send(`${user1} has chosen ${interaction.content}. How lame.`);
+						return
+					} else { 
+						player1.int = interaction.content
+						interaction.delete(interaction.id)
+						interaction.channel.send(`${user1} has chosen their number.`);
+						console.log(`P1: ${player1.name} ${interaction.content}`)
+						return player1.int
+					}
 				}
-				return interaction.content
+				if (interaction.author.id == player2.id && !isNaN(interaction.content)) {
+					if((interaction.content > limit || interaction.content < 1)) {
+						interaction.delete(interaction.id)
+						interaction.channel.send(`${user1} has chosen ${interaction.content}. How lame.`);
+						return
+					} else { 
+						player2.int = interaction.content
+						interaction.delete(interaction.id)
+						interaction.channel.send(`${user2} has chosen their number.`);
+						console.log(`P2: ${player2.name} ${interaction.content}`)
+						return player2.int
+					}
+				}
 			}
 		};
 
 
 		interaction.channel.awaitMessages({ filter, max: 2, time: 16000, errors: ['time'] })
 		.then(collected => {
-			interaction.followUp(`Both parties have chosen their number has chosen their number.`);
-			console.log(player1.int, player2.int)
-			console.log(collected)
+			sleep(5000)
+			interaction.followUp(`${user1} chose ${player1.int} and ${user2} chose ${player2.int}`);
+			if (player1.int == player2.int) {
+				interaction.followUp(`Wow. Looks like ${user2} lost at odds of ${limit}/1! Unlucky!`)
+			} else {
+				interaction.followUp(`Better luck next time ${user1}`)
+			}
 		})
 		.catch(collected => {
-			interaction.followUp('Looks like nobody got the answer this time.');
+			if (player1.int == null) {
+				interaction.followUp(`${user1} Didn't choose a number!`);
+			} else {
+				interaction.followUp(`${user2} Didn't choose a number!`);
+			}
 		});
 
 	},
