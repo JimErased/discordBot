@@ -18,7 +18,7 @@ module.exports = {
 		.addUserOption(option =>
 			option.setName('target').setDescription('Choose a user to odds').setRequired(true))
 		.addStringOption(option =>
-			option.setName('reason').setDescription('Optional: Why are you declaring odds?'))
+			option.setName('reason').setDescription('Optional: Why are you declaring odds?').setRequired(true))
         .setDefaultPermission(true),
 	async execute(interaction) {
 		await interaction.deferReply();
@@ -87,14 +87,14 @@ module.exports = {
 		};
 
 
-		interaction.channel.awaitMessages({ filter, max: 2, time: 16000, errors: ['time'] })
+		interaction.channel.awaitMessages({ filter, max: 2, time: 120000, errors: ['time'] })
 		.then(collected => {
 			sleep(5000)
 			interaction.followUp(`${user1} chose ${player1.int} and ${user2} chose ${player2.int}`);
 			if (player1.int == player2.int) {
-				interaction.followUp(`Wow. Looks like ${user2} lost at odds of ${limit}/1! Unlucky!`)
+				interaction.followUp(`Wow. Looks like ${user2} lost at odds of ${limit}/1! Unlucky! Now they'll have to ${reason}`)
 			} else {
-				interaction.followUp(`Better luck next time ${user1}`)
+				interaction.followUp(`Better luck next time ${user1}. ${reason} will not have to happen.`)
 			}
 		})
 		.catch(collected => {
